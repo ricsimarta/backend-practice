@@ -39,16 +39,12 @@ const init = () => {
     })
       .then(res => res.json())
       .then(resJson => {
-        if (resJson === 'ok') {
-          usersData.push(userCardComponent({
-            id: usersData.length + 1,
-            name: userName
-          }))
+          usersData.push(userCardComponent(resJson))
           console.log(usersData)
 
           rootElement.insertAdjacentHTML('beforeend', usersData[usersData.length - 1])
         }
-      })
+      )
 
   })
 

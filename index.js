@@ -84,7 +84,7 @@ app.get('/users/:userid', (req, res) => {
 
 app.post('/users/new-user', (req, res) => {
   console.dir(req.body)
-  const newUser = req.body
+  const newUserData = req.body
 
   fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
     if (err) {
@@ -92,18 +92,23 @@ app.post('/users/new-user', (req, res) => {
 
       res.status(500).json('error at reading file')
     } else {
-      const users = JSON.parse(data)
+      const users = JSON.parse(data) // users === array !!!
+      const newUser = {
+        id: users[users.length - 1].id + 1,
+        name: newUserData.name
+      }
+
       users.push(newUser)
 
-      fs.writeFile(path.join(__dirname, '/data/users1.json'), JSON.stringify(users, null, 2), (err) => {
+      fs.writeFile(path.join(__dirname, '/data/users.json'), JSON.stringify(users, null, 2), (err) => {
         if (err) {
           console.log(`error at writing file: ${err}`)
     
           res.json(`error at writing file: ${err}`)
         } else {
-          console.log(`fire writing was successful`)
+          console.log(`successfully updated users with: ${JSON.stringify(newUser)}`)
     
-          res.json('ok')
+          res.json(newUser)
         }
       })
     }
