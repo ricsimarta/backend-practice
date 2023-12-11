@@ -57,7 +57,7 @@ app.get('/users/:userid', (req, res) => {
       if (err) {
         console.log('error at reading file: ', err)
 
-        res.status(500).send('error at reading file')
+        res.status(500).json('error at reading file')
       } else { /* ha nincs hiba, akkor van data */
         console.log(`reading file was successful, searching for user id: ${userId}`)
 
@@ -66,16 +66,16 @@ app.get('/users/:userid', (req, res) => {
 
         /* megkeresem az adott userId-t a users adatban */
         const foundUser = users.find((user) => user.id === userId)
-        
+
         if (foundUser) { /* TRUTHY értéket keresek pl. object { id: 2, name: 'John Doe' } */
           console.log(`found user id: ${userId}, data: ${foundUser}`)
 
-          res.status(200).send(foundUser)
+          res.status(200).json(foundUser)
         } else { /* FALSY értéke van pl. undefined */
           console.log(`user id: ${userId} was not found`)
 
           /* ha a find undefined-dal tér vissza, akkor nincs adott ID a users-ben */
-          res.status(404).send(`user id: ${userId} was not found`)
+          res.status(404).json(`user id: ${userId} was not found`)
         }
       }
     })
@@ -84,8 +84,30 @@ app.get('/users/:userid', (req, res) => {
 
 app.post('/users/new-user', (req, res) => {
   console.dir(req.body)
+  const newUser = req.body
 
-  res.json('ok')
+  fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.log('error at reading file: ', err)
+
+      res.status(500).json('error at reading file')
+    } else {
+      const users = JSON.parse(data)
+      users.push(newUser)
+
+      fs.writeFile(path.join(__dirname, '/data/users1.json'), JSON.stringify(users, null, 2), (err) => {
+        if (err) {
+          console.log(`error at writing file: ${err}`)
+    
+          res.json(`error at writing file: ${err}`)
+        } else {
+          console.log(`fire writing was successful`)
+    
+          res.json('ok')
+        }
+      })
+    }
+  })
 })
 
 /* elkezdi figyelni az adott portot a számítógépen (localhost vagy 127.0.0.1) */
