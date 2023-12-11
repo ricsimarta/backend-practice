@@ -83,32 +83,40 @@ app.get('/users/:userid', (req, res) => {
 })
 
 app.post('/users/new-user', (req, res) => {
-  console.dir(req.body)
+  /* a beérkezett adat a request body-jában található, tehát req.body === beérkezett adat */
   const newUserData = req.body
 
+  /* beolvasom a jelenlegi users json-ömet */
   fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
+    /* hibakezelés */
     if (err) {
       console.log('error at reading file: ', err)
 
       res.status(500).json('error at reading file')
     } else {
+      /* átalakítom a beolvasott stringet json-né */
       const users = JSON.parse(data) // users === array !!!
+
+      /* létrehozom az új user objektumot */
       const newUser = {
         id: users[users.length - 1].id + 1,
         name: newUserData.name
       }
 
+      /* kibővítem a users array-em */
       users.push(newUser)
 
+      /* kiírom a fájlba a kibővített users array-t */
       fs.writeFile(path.join(__dirname, '/data/users.json'), JSON.stringify(users, null, 2), (err) => {
         if (err) {
           console.log(`error at writing file: ${err}`)
     
           res.json(`error at writing file: ${err}`)
         } else {
+          /* ez az a pont, amikor tudom, hogy sikeres volt minden lépés */
           console.log(`successfully updated users with: ${JSON.stringify(newUser)}`)
     
-          res.json(newUser)
+          res.status(201).json(newUser)
         }
       })
     }

@@ -37,14 +37,18 @@ const init = () => {
         password: userPassword
       })
     })
-      .then(res => res.json())
-      .then(resJson => {
-          usersData.push(userCardComponent(resJson))
+      .then(res => {
+        if (res.status === 201) return res.json()
+        else throw Error('error at reading file')
+      })
+      .then(newUser => {
+          usersData.push(userCardComponent(newUser))
           console.log(usersData)
 
           rootElement.insertAdjacentHTML('beforeend', usersData[usersData.length - 1])
         }
       )
+      .catch(err => console.log(err))
 
   })
 
