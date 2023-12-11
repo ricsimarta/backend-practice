@@ -1,3 +1,62 @@
-div#root {
-  color: red;
+* {
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+  font-family: inherit;
 }
+
+/* --- HEADER START --- */
+
+header {
+  display: flex;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+header form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+header input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+header button {
+  width: 100px;
+
+  text-transform: uppercase;
+  font-size: 24px;
+}
+
+/* --- HEADER END --- */
+
+/* --- CARDS START --- */
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  max-width: 350px;
+
+  padding: 10px;
+
+  border: 2px solid black;
+}
+
+/* --- CARDS END --- */
