@@ -123,6 +123,42 @@ app.post('/users/new-user', (req, res) => {
   })
 })
 
+app.delete('/users/delete', (req, res) => {
+  console.log(req.body)
+
+  fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.log(`error at reading file: ${err}`)
+
+      res.json(err)
+    } else {
+      const users = JSON.parse(data)
+      let deletedUser
+      console.log(users)
+
+      const newUsers = []
+
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].id !== req.body.id) {
+          newUsers.push(users[i])
+        } else {
+          deletedUser = users[i]
+        }
+      }
+
+      console.log(newUsers)
+
+      if (deletedUser) {
+        console.log(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
+        res.json(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
+      } else {
+        console.log(`user: ${req.body.id} not found`)
+        res.json(`user: ${req.body.id} not found`)
+      }
+    }
+  })
+})
+
 /* elkezdi figyelni az adott portot a számítógépen (localhost vagy 127.0.0.1) */
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

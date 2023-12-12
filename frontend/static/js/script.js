@@ -8,8 +8,10 @@ const skeleton = () => `
 
 const formComponent = () => `
   <form>
-    <input type="text" name="name" placeholder="enter name">
-    <input type="password" name="password" placeholder="enter password" required>
+    <div>
+      <input type="text" name="name" placeholder="enter name">
+      <input type="password" name="password" placeholder="enter password" required>
+    </div>
 
     <button>send</button>
   </form>

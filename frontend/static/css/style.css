@@ -8,6 +8,10 @@
 
 /* --- HEADER START --- */
 
+html {
+  font-family: 'Rethink Sans', sans-serif;
+}
+
 header {
   display: flex;
   justify-content: center;
@@ -19,9 +23,20 @@ header form {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
+}
+
+header form div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
 }
 
 header input {
+  width: 100%;
+  max-width: 200px;
+
   padding: 10px;
   font-size: 16px;
 }
@@ -29,8 +44,11 @@ header input {
 header button {
   width: 100px;
 
+  padding: 6px 0;
+
   text-transform: uppercase;
   font-size: 24px;
+  letter-spacing: 0.12em;
 }
 
 /* --- HEADER END --- */
