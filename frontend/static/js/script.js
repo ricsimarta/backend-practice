@@ -21,28 +21,20 @@ const userCardComponent = (userData) => `
   <div class="card">
     <h3>${userData.id}</h3>
     <h2>${userData.name}</h2>
+    <span id="deleteid-${userData.id}" class="material-symbols-outlined delete">delete</span>
+    <span id="editid-${userData.id}" class="material-symbols-outlined edit">edit</span>
   </div>
 `
 
-const init = () => {
-  rootElement.insertAdjacentHTML("beforeend", skeleton())
-
-  const headerElement = document.querySelector("header")
-  const cardsElement = document.querySelector(".cards")
-
-  headerElement.insertAdjacentHTML("beforeend", formComponent())
-
+const formEventsComponent = (formElement, cardsElement) => {
   const inputNameElement = document.querySelector('input[name="name"]')
-  console.log(inputNameElement)
   inputNameElement.addEventListener('input', (event) => {
     if (event.data === "0" || event.data === "1" || event.data === "2") {
       console.log('cant write number')
       event.target.value = event.target.value.substring(0, event.target.value.length - 1)
-      event.target.disabled = true
     }
   })
 
-  const formElement = document.querySelector('form')
   formElement.addEventListener('submit', (event) => {
     event.preventDefault()
 
@@ -63,25 +55,70 @@ const init = () => {
         if (res.status === 201) return res.json()
         else throw Error('error at writing file')
       })
-      .then(newUser => {
-          usersData.push(userCardComponent(newUser))
-          console.log(usersData)
+      .then(resJson => {
+        /* usersData.push(userCardComponent(newUser))
 
-          cardsElement.insertAdjacentHTML('beforeend', usersData[usersData.length - 1])
-        }
-      )
+        cardsElement.insertAdjacentHTML('beforeend', usersData[usersData.length - 1]) */
+
+        console.log(resJson)
+        fetchUsers(cardsElement)
+      })
       .catch(err => console.log(err))
-
   })
+}
+
+const fetchUsers = (cardsElement) => {
+  cardsElement.innerHTML = ""
+  usersData = []
 
   fetch('/users')
     .then(res => res.json())
     .then(data => {
       usersData = data.map(user => userCardComponent(user))
       // console.log(usersData)
-
       cardsElement.insertAdjacentHTML("beforeend", usersData.join(""))
+
+      const deleteElements = document.querySelectorAll('span.delete')
+      deleteElements.forEach(deleteButton => deleteButton.addEventListener('click', () => {
+        const deleteId = deleteButton.id.split('-')[1]
+
+        fetch('/users/delete', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: deleteId })
+        })
+          .then(res => {
+            if (res.status === 200) return res.json()
+            else throw Error(`error at deleting user: ${deleteId}`)
+          })
+          .then(resJson => {
+            console.log(resJson)
+
+            fetchUsers(cardsElement)
+          })
+          .catch(err => {
+            rootElement.insertAdjacentHTML("afterbegin", `
+            <div class="error-box">
+              ${err}
+            </div>`)
+          })
+      }))
     })
+}
+
+const init = () => {
+  rootElement.insertAdjacentHTML("beforeend", skeleton())
+
+  const headerElement = document.querySelector("header")
+  const cardsElement = document.querySelector(".cards")
+
+  headerElement.insertAdjacentHTML("beforeend", formComponent())
+  const formElement = document.querySelector('form')
+  formEventsComponent(formElement, cardsElement)
+
+  fetchUsers(cardsElement)
 }
 
 init()

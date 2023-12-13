@@ -99,7 +99,7 @@ app.post('/users/new-user', (req, res) => {
 
       /* létrehozom az új user objektumot */
       const newUser = {
-        id: users[users.length - 1].id + 1,
+        id: users.length > 0 ? users[users.length - 1].id + 1 : 1,
         name: newUserData.name
       }
 
@@ -114,9 +114,9 @@ app.post('/users/new-user', (req, res) => {
           res.json(`error at writing file: ${err}`)
         } else {
           /* ez az a pont, amikor tudom, hogy sikeres volt minden lépés */
-          console.log(`successfully updated users with: ${JSON.stringify(newUser)}`)
+          console.log(`successfully created user: ${JSON.stringify(newUser)}`)
     
-          res.status(201).json(newUser)
+          res.status(201).json(`created user: ${JSON.stringify(newUser)}`)
         }
       })
     }
@@ -124,36 +124,42 @@ app.post('/users/new-user', (req, res) => {
 })
 
 app.delete('/users/delete', (req, res) => {
-  console.log(req.body)
+  const deleteId = parseInt(req.body.id)
 
   fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
     if (err) {
       console.log(`error at reading file: ${err}`)
 
-      res.json(err)
+      res.status(500).json(err)
     } else {
       const users = JSON.parse(data)
       let deletedUser
-      console.log(users)
 
       const newUsers = []
 
       for (let i = 0; i < users.length; i++) {
-        if (users[i].id !== req.body.id) {
+        if (users[i].id !== deleteId) {
           newUsers.push(users[i])
         } else {
           deletedUser = users[i]
         }
       }
 
-      console.log(newUsers)
-
       if (deletedUser) {
-        console.log(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
-        res.json(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
+        fs.writeFile(path.join(__dirname, '/data/users.json'), JSON.stringify(newUsers, 0, 2), (err) => {
+          if (err) {
+            console.log(`error at writing file: ${err}`)
+
+            res.status(500).json(err)
+          } else {
+            console.log(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
+            res.status(200).json(`deleted user: ${deletedUser.id}, deleted data: ${JSON.stringify(deletedUser)}`)
+          }
+        })
+
       } else {
-        console.log(`user: ${req.body.id} not found`)
-        res.json(`user: ${req.body.id} not found`)
+        console.log(`user: ${deleteId} not found`)
+        res.status(404).json(`user: ${deleteId} not found`)
       }
     }
   })
