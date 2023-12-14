@@ -165,6 +165,57 @@ app.delete('/users/delete', (req, res) => {
   })
 })
 
+/* app.get('/countries/:language', (req, res) => {
+  //req.params.language === "english"
+})
+
+app.get('/countries/:language/:minPop', (req, res) => {
+  //req.params.language === "english"
+  //req.params.minPop === 1000000
+}) */
+
+app.patch('/users/:id/:name', (req, res) => {
+  const userId = parseInt(req.params.id)
+
+  if (isNaN(userId)) {
+    console.log(`user id must be a number, got: ${req.params.id}`)
+    res.json(`user id must be a number, got: ${req.params.id}`)
+  } else {
+    const newName = req.params.name
+
+    fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
+      if (err) {
+        console.log(`error at reading file: ${err}`)
+
+        res.status(500).json(err)
+      } else {
+        const users = JSON.parse(data)
+
+        //console.log('original users', users)
+
+        const foundUser = users.find(user => user.id === userId)
+        //console.log('found user', foundUser)
+        foundUser.name = newName
+        //console.log('changed user', foundUser)
+
+        //console.log('changed users? ', users)
+
+        fs.writeFile(path.join(__dirname, '/data/users.json'), JSON.stringify(users, 0, 2), (err) => {
+          if (err) {
+            console.log(`error at writing file: ${err}`)
+
+            res.status(500).json(err)
+          } else {
+            console.log(`successfully updated user ${userId}, with new data: ${newName}`)
+
+            res.status(202).json(`successfully updated user ${userId}, with new data: ${newName}`)
+          }
+        })
+      }
+    })
+  }
+})
+
 /* elkezdi figyelni az adott portot a számítógépen (localhost vagy 127.0.0.1) */
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

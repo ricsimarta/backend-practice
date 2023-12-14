@@ -1,6 +1,12 @@
 [
   {
     "id": 1,
-    "name": "qwe"
+    "name": "kismacska",
+    "age": 28,
+    "email": "x@c.hu"
+  },
+  {
+    "id": 2,
+    "name": "proba"
   }
 ]
