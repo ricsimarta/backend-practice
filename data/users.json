@@ -1,12 +1,17 @@
 [
   {
     "id": 1,
-    "name": "kismacska",
-    "age": 28,
-    "email": "x@c.hu"
+    "name": "nagymacska",
+    "age": 29
   },
   {
-    "id": 2,
-    "name": "proba"
+    "id": 3,
+    "name": "jkljkl",
+    "age": 18
+  },
+  {
+    "id": 4,
+    "name": "old ricsi",
+    "age": 99
   }
 ]

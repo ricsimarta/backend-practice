@@ -165,25 +165,57 @@ app.delete('/users/delete', (req, res) => {
   })
 })
 
-/* app.get('/countries/:language', (req, res) => {
-  //req.params.language === "english"
-})
 
-app.get('/countries/:language/:minPop', (req, res) => {
-  //req.params.language === "english"
-  //req.params.minPop === 1000000
-}) */
-
-app.patch('/users/:id/:name', (req, res) => {
-  const userId = parseInt(req.params.id)
+app.patch('/users', (req, res) => {
+  const userId = parseInt(req.body.id)
 
   if (isNaN(userId)) {
-    console.log(`user id must be a number, got: ${req.params.id}`)
-    res.json(`user id must be a number, got: ${req.params.id}`)
+    console.log(`user id must be a number, got: ${req.body.id}`)
+    res.json(`user id must be a number, got: ${req.body.id}`)
   } else {
-    const newName = req.params.name
+    const newData = req.body.newData
+    const keysToChange = Object.keys(newData)
 
     fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
+      if (err) {
+        console.log(`error at reading file: ${err}`)
+
+        res.status(500).json(err)
+      } else {
+        const users = JSON.parse(data)
+
+        const foundUser = users.find(user => user.id === userId)
+
+        if (foundUser) {
+          keysToChange.forEach(key => {
+            if (Object.keys(foundUser).includes(key)) {
+              foundUser[key] = newData[key]
+            } else {
+              console.log(`${key} is not a valid key on user`)
+            }
+          })
+
+          fs.writeFile(path.join(__dirname, '/data/users.json'), JSON.stringify(users, 0, 2), (err) => {
+            if (err) {
+              console.log(`error at writing file: ${err}`)
+
+              res.json(`error at reading file: ${err}`)
+            } else {
+              console.log(`user ${userId} has been successfully changed, new data: ${JSON.stringify(newData)}`)
+
+              res.json(`user ${userId} has been successfully changed, new data: ${JSON.stringify(newData)}`)
+            }
+          })
+
+        } else {
+          console.log(`user ${userId} is not found`)
+
+          res.json(`user ${userId} is not found`)
+        }
+      }
+    })
+
+    /* fs.readFile(path.join(__dirname, '/data/users.json'), 'utf8', (err, data) => {
       if (err) {
         console.log(`error at reading file: ${err}`)
 
@@ -212,7 +244,7 @@ app.patch('/users/:id/:name', (req, res) => {
           }
         })
       }
-    })
+    }) */
   }
 })
 
