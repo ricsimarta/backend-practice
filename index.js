@@ -166,7 +166,7 @@ app.delete('/users/delete', (req, res) => {
 })
 
 
-app.patch('/users', (req, res) => {
+app.patch('/users/patch', (req, res) => {
   const userId = parseInt(req.body.id)
 
   if (isNaN(userId)) {

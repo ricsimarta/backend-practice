@@ -20,7 +20,8 @@ const formComponent = () => `
 const userCardComponent = (userData) => `
   <div class="card">
     <h3>${userData.id}</h3>
-    <h2>${userData.name}</h2>
+    <h2 class="name">${userData.name}</h2>
+    <h4>${userData.age}</h4>
     <span id="deleteid-${userData.id}" class="material-symbols-outlined delete">delete</span>
     <span id="editid-${userData.id}" class="material-symbols-outlined edit">edit</span>
   </div>
@@ -104,6 +105,55 @@ const fetchUsers = (cardsElement) => {
               ${err}
             </div>`)
           })
+      }))
+
+      const editElements = document.querySelectorAll('span.edit')
+      editElements.forEach(editElement => editElement.addEventListener('click', () => {
+        //console.log(editElement.parentElement)
+
+        const cardElement = editElement.parentElement
+
+        const h2Element = cardElement.querySelector('h2')
+        //console.log(h2Element)
+
+        const userId = editElement.id.split('-')[1]
+        const oldName = h2Element.innerText
+
+        h2Element.innerHTML = `
+          <input type="text" name="name" placeholder="${oldName}">
+          <button id="id-${userId}" class="change">ok</button>
+        `
+
+        const changeButtonElement = cardElement.querySelector('button.change')
+        changeButtonElement.addEventListener('click', () => {
+          const inputElement = cardElement.querySelector('input[name="name"]')
+          const newName = inputElement.value // üres input stringnél value === ""
+          console.log(userId)
+          console.log(newName)
+
+          let newUserData = {
+            id: userId,
+            newData: {
+              name: newName
+            }
+          }
+
+          if (!newName) newUserData.newData.name = oldName
+
+          fetch('/users/patch', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newUserData)
+          })
+            .then(res => res.json())
+            .then(resJson => {
+              console.log(resJson)
+            
+              fetchUsers(cardsElement)
+            })
+        })
       }))
     })
 }
